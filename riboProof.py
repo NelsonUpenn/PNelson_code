@@ -1,60 +1,62 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun 10 08:11:33 2017
+9 May 2018
 
-@author: pcn (Python 3.6)
+@author: Philip Nelson (Python 3.6)
 Description: riboProof2.py  simulate kinetic proofreading
-inspired by Dan Zuckerman notes:
+Inspired by Dan Zuckerman notes:
 see http://physicallensonthecell.org/cell-biology-phenomena/active-kinetic-proofreading
 which themselves are a simplification of Hopfield PNAS 1974
 
-calls ribosim2.py
+Calls ribosim2.py, so run that first to define function ribosim. See its docstring.
+Writes kproof.npz for display by kproof_backend.ipynb
 """
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import inv
 
 # adjustable parameters
-bias = 4. # ratio of off-rates for wrong/right, = 1/f_0
-conc_GTP = 1e-3 # in M; use 1e-3
-conc_GDP = 1e-6 # in M; use 1e-6
-conc_Pi = 1e-6 # in M; use 1e-6
-chainlength = 20 # stop when chain gets this long
+bias = 4.        # ratio of off-rates for wrong/right, = 1/f_0
+conc_GTP = 1e-3  # in M; use 1e-3 (or 1e-6, closer to equil)
+conc_GDP = 1e-6  # in M; use 1e-6 (or 1000e-6, closer to equil)
+conc_Pi = 1e-6   # in M; use 1e-6  (or 1000e-6, closer to equil)
+chainlength = 20 # terminate when chain gets this long
+numchains = 1    # how many chains to generate
 
-# fixed parameters
-conc_C = 1e-4 # in M; C means "correct"
-conc_W = conc_C # in M; W means "wrong"
-K_D = 4.9e5 # in M, equil const for GDP+Pi <--> GTP
+# fixed parameters - loading tRNA complexes with GTP
+conc_C = 1e-4          # concentration in M; C means "correct"
+conc_W = conc_C        # in M; W means "wrong"
+K_D = 4.9e5            # in M, equil constant for GDP+Pi <--> GTP
 kon = 1e8 # in 1/(M s), other on-rates are expressed as multiples of this base value
 koff = 100 # in 1/s, other off-rates are expressed as multiples of this base value
-incorprate = 9e-2*koff # in 1/s, final incorporation step rate, eventually take=5e-3*koff
-kgtp_on = kon # g'_t
-kgtp_off = koff # g_t
-kgdp_offN = 10*koff  # g_d assumption that GTP is preferred to GDP 
-kgdp_onN = kon       # g'_d
-kh = 1e-8*koff      # should be very slow hydrolysis mainly occurs on ribosome
+incorprate = 9e-2*koff # in 1/s, final incorporation step rate; realistic value is  ~ 1e-3*koff
+kgtp_on = kon          # g'_t
+kgtp_off = koff        # g_t
+kgdp_offN = 10*koff    # g_d. This is the assumption that GTP is preferred to GDP 
+kgdp_onN = kon         # g'_d
+kh = 1e-8*koff         # should be very slow: hydrolysis mainly occurs on ribosome
 
 # derived parameter
-ks = kh*kgdp_offN*kgtp_on/(K_D*kgdp_onN*kgtp_off)  # see notes
+ks = kh*kgdp_offN*kgtp_on/(K_D*kgdp_onN*kgtp_off)  # see paper eqn 7
 
-# Ribosome cycle - correct amino acid
-kc_on = kon # k'_c
-kc_off = koff # k_c
-lc_on = 1e-2*kon   # l'_c GTP-bound tRNA-complex much more likely to bind # orig 1e-1*kon
+# fixed parameters for ribosome cycle - correct amino acid
+kc_on = kon    # k'_c
+kc_off = koff  # k_c
+lc_on = 1e-2*kon   # l'_c GTP-bound tRNA-complex much more likely to bind 
 lc_off = koff  # l_c
 mhc = 0.1*koff # m'
-msc = (ks/kh)*mhc*lc_off*kc_on/(lc_on*kc_off)  # see notes
+msc = (ks/kh)*mhc*lc_off*kc_on/(lc_on*kc_off)  # see paper eqn 9
 
-# Ribosome cycle - wrong amino acid
+# fixed parameters for ribosome cycle - wrong amino acid
 kw_on = kc_on
 kw_off = bias*koff  # D binds more weakly than C if bias > 1
 lw_on = lc_on
 lw_off = bias*lc_off
 mhw = mhc
-msw = (ks/kh)*mhw*lw_off*kw_on/(lw_on*kw_off)  # differs from ms because kw_off is not kc_off
+msw = (ks/kh)*mhw*lw_off*kw_on/(lw_on*kw_off)  # see paper eqn 9
 
-#%% set up for simulation 
+#%% set up simulation 
 # first find steady concentrations of C.GTP, C.GDP, W.GTP, and W.GDP. We assume unknown rxns hold
 # [X], [GTP], [GDP], and [Pi] fixed and impose steady state to get [X.GTP], [X.GDP] where 
 # X = either C (correct loaded tRNA) or W (wrong)
@@ -104,12 +106,12 @@ R[1,4] = 0.
 R[2,4] = msw*conc_Pi
 R[3,4] = 0.
 R[4,4] = 0.
-#%% run some simulations
-chains = []
-ts = []    # placeholder for a list with 
+#%% run simulation
+chains = []# placeholder for a list with simulated chains
+ts = []    
 fracs = [] # fraction of chain occupied by correct
 states = []# what state after each transition
-for i in range(1):
+for i in range(numchains):
     print(i)
     chainM, tsM, statesM, wrongs = ribosim(R, incorprate, chainlength)
     chains = chains + [chainM]
