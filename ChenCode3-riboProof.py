@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Aug 2018
-Author: Chen Zuckerman Nelson  (nelson@physics.upenn.edu)
-Python: 3.6   ChenCode3-riboProof.py
+Python: 3.8   ChenCode3-riboProof.py
+Created 2019  (nelson@physics.upenn.edu)
+
+Supplement to Chen, Zuckerman, and Nelson "Stochastic Simulation to Visualize Gene 
+Expression and Error Correction in Living Cells"
 Description: create and display stochastic simulation of ribosome kinetic proofreading process
 Writes kproof_realistic.npz or kproof_HN.npz for display by ChenCode4-kproofBackend.ipynb
 

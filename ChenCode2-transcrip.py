@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Aug 2018
-Author: Chen Zuckerman Nelson  (nelson@physics.upenn.edu)
-Python: 3.6   ChenCode2-transcrip.py
+Python: 3.8   ChenCode2-transcrip.py
+Created 2019  (nelson@physics.upenn.edu)
+Supplement to Chen, Zuckerman, and Nelson "Stochastic Simulation to Visualize Gene 
+Expression and Error Correction in Living Cells"
+
 Description: create and display stochastic simulation of birth-death process
  Generate Fig 1 of "Stochastic Simulation to Visualize Gene Expression and Error Correction in Living Cells"
  For more details see "Physical models of living systems" by Philip Nelson
