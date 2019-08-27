@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Python: 3.8   ChenCode3-riboProof.py
+Python 3.7:   ChenCode3-riboProof.py
 Created 2019  (nelson@physics.upenn.edu)
 
 Supplement to Chen, Zuckerman, and Nelson "Stochastic Simulation to Visualize Gene 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Python 3.8 ChenCode2B-bursting.py
+Python 3.7: ChenCode2B-bursting.py
 Created  2019   (nelson@physics.upenn.edu)
 
 Simulate the bursting model of RNA transcription
